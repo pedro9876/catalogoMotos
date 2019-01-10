@@ -5,9 +5,16 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -17,11 +24,14 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import yamaha.catalogomotos.adapter.LVAdapter;
 import yamaha.catalogomotos.model.Moto;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
+                                                    View.OnFocusChangeListener {
 
     private Activity mActivity;
 
@@ -35,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     private EditText Nombres, Apellidos, Telefono, Correo;
     ImageButton btn;
 
+    Timer timer;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
         setContentView(R.layout.activity_main);
 
+
+
         //Asignamos los valores de cada componente de la interfaz a las variables
         Nombres = (EditText) findViewById(R.id.editText1);
         Nombres.setHint("Nombres");
@@ -55,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Nombres.setBackground(getDrawable(R.drawable.edittext_drawable));
         Nombres.setTextSize(24);
         Nombres.setPadding(15,0,0,0);
+        Nombres.setOnFocusChangeListener(this);
 
         Apellidos = (EditText) findViewById(R.id.editText2);
         Apellidos.setHint("Apellidos");
@@ -65,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Apellidos.setBackground(getDrawable(R.drawable.edittext_drawable));
         Apellidos.setTextSize(24);
         Apellidos.setPadding(15,0,0,0);
+        Apellidos.setOnFocusChangeListener(this);
+
 
         Telefono = (EditText) findViewById(R.id.editText3);
         Telefono.setHint("Teléfono");
@@ -75,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Telefono.setBackground(getDrawable(R.drawable.edittext_drawable));
         Telefono.setTextSize(24);
         Telefono.setPadding(15,0,0,0);
+        Telefono.setOnFocusChangeListener(this);
 
         Correo = (EditText) findViewById(R.id.editText4);
         Correo.setHint("Correo");
@@ -85,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         Correo.setBackground(getDrawable(R.drawable.edittext_drawable));
         Correo.setTextSize(24);
         Correo.setPadding(15,0,0,0);
+        Correo.setOnFocusChangeListener(this);
         mActivity = MainActivity.this;
 
         mListView = (ListView) findViewById(R.id.list_view);
@@ -98,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 mListView.getAdapter().getView(0, null, null),
                 0,
                 mListView.getAdapter().getItemId(0));
+
     }
 
     public void populateMotorbikes() {
@@ -118,9 +139,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        TextView tv = view.findViewById(R.id.tvName);
-        if(tvAux != null)
+        select(view,i);
+    }
+
+    private void select(View v, int i){
+        TextView tv = v.findViewById(R.id.tvName);
+        if(tvAux != null) {
             tvAux.setTextColor(Color.WHITE);
+        }
         tvAux = tv;
         tv.setTextColor(Color.BLACK);
         Moto motoAux = data.get(i);
@@ -130,71 +156,117 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     //Definimos un metodo para ejecutarlos al precionar boton
 
     public void Enviar(View v){
-        if (Nombres.getText().toString().isEmpty()){
-            Nombres.setBackground(getDrawable(R.drawable.edittext_drawable_2));
-            Nombres.setPadding(15,0,0,0);
-            Nombres.setHint("Nombres");
+        boolean isNom,isAp,isTel,isCorr;
+        isNom=TextUtils.isEmpty(Nombres.getText().toString());
+        isAp=TextUtils.isEmpty(Apellidos.getText().toString());
+        isTel=TextUtils.isEmpty(Telefono.getText().toString());
+        isCorr=TextUtils.isEmpty(Correo.getText().toString());
+        if(isNom)
+            cambiarError(Nombres);
+        if(isAp)
+            cambiarError(Apellidos);
+        if(isTel)
+            cambiarError(Telefono);
+        if(isCorr)
+            cambiarError(Correo);
 
-        }else
-            Nombres.setBackground(getDrawable(R.drawable.edittext_drawable));
-        Nombres.setPadding(15,0,0,0);
-        Nombres.setHint("Debe ingresar los nombres");
-        Nombres.setCompoundDrawablesWithIntrinsicBounds(null, null,
+        if(!isNom && !isAp && !isTel && !isCorr){
+            //poner el codigo de enviar
+        }
+
+    }
+
+    private void cambiarError(EditText editText){
+        String hint="";
+        switch (editText.getId()){
+            case R.id.editText1: hint="Debe ingresar los nombres";break;
+            case R.id.editText2: hint="Debe ingresar los apellidos";break;
+            case R.id.editText3: hint="Debe ingresar el teléfono";break;
+            case R.id.editText4: hint="Debe ingresar el correo";break;
+        }
+        editText.setBackground(getDrawable(R.drawable.edittext_drawable_error));
+        editText.setPadding(15,0,0,0);
+        editText.setHint(hint);
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
                 getResources().getDrawable(R.drawable.pencil_5,null),
                 null);
+    }
 
-
-        {
-            if (Apellidos.getText().toString().isEmpty()){
-                Apellidos.setBackground(getDrawable(R.drawable.edittext_drawable_2));
-                Apellidos.setPadding(15,0,0,0);
-                Apellidos.setHint("Apellidos");
-
-            }else
-                Apellidos.setBackgroundResource(R.drawable.edittext_drawable);
-                Apellidos.setPadding(15,0,0,0);
-                Apellidos.setHint("Debe ingresar los apellidos");
-                Apellidos.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                    getResources().getDrawable(R.drawable.pencil_5,null),
-                    null);
-
-
-            {
-                if (Telefono.getText().toString().isEmpty()){
-                    Telefono.setBackgroundResource(R.drawable.edittext_drawable_2);
-                    Telefono.setPadding(15,0,0,0);
-                    Telefono.setHint("Teléfono");
-
-                }else
-                    Telefono.setBackgroundResource(R.drawable.edittext_drawable);
-                    Telefono.setPadding(15,0,0,0);
-                    Telefono.setHint("Debe ingresar el teléfono");
-                    Telefono.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                        getResources().getDrawable(R.drawable.pencil_5,null),
-                        null);
-
-                {
-                    if (Correo.getText().toString().isEmpty()){
-                        Correo.setBackgroundResource(R.drawable.edittext_drawable_2);
-                        Correo.setPadding(15,0,0,0);
-                        Correo.setHint("Correo");
-
-                    }else
-                        Correo.setBackgroundResource(R.drawable.edittext_drawable);
-                    Correo.setPadding(15,0,0,0);
-                    Correo.setHint("Debe ingresar el correo");
-                    Correo.setCompoundDrawablesWithIntrinsicBounds(null, null,
-                            getResources().getDrawable(R.drawable.pencil_5,null),
-                            null);
-
-
-                }
-            }
+    private void cambiarNormal(EditText editText){
+        String hint="";
+        switch (editText.getId()){
+            case R.id.editText1: hint="Nombres";break;
+            case R.id.editText2: hint="Apellidos";break;
+            case R.id.editText3: hint="Teléfono";break;
+            case R.id.editText4: hint="Correo";break;
         }
+        editText.setBackground(getDrawable(R.drawable.edittext_drawable));
+        editText.setPadding(15,0,0,0);
+        editText.setHint(hint);
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                null,
+                null);
+    }
+
+    private void cambiarNormal2(EditText editText){
+        String hint="";
+        switch (editText.getId()){
+            case R.id.editText1: hint="Nombres";break;
+            case R.id.editText2: hint="Apellidos";break;
+            case R.id.editText3: hint="Teléfono";break;
+            case R.id.editText4: hint="Correo";break;
+        }
+        editText.setBackground(getDrawable(R.drawable.edittext_drawable));
+        editText.setPadding(15,0,0,0);
+        editText.setHint(hint);
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                getResources().getDrawable(R.drawable.check_ok,null),
+                null);
+    }
+
+    private void changeOk(EditText editText){
+        editText.setBackground(getDrawable(R.drawable.edittext_drawable_ok));
+        editText.setPadding(15,0,0,0);
+        editText.setCompoundDrawablesWithIntrinsicBounds(null, null,
+                getResources().getDrawable(R.drawable.check_ok,null),
+                null);
     }
 
     public void fadeMoreDetails(View button) {
         startActivity(new Intent(this, MoreDetailsActivity.class));
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+
+    /**
+     * Método para detectar el cambio de foco del editText
+     */
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        final EditText ee=(EditText)v;
+        if(hasFocus){
+            cambiarNormal(ee);
+        }
+        else{
+            if(TextUtils.isEmpty(ee.getText().toString())){
+                cambiarError(ee);
+            }
+            else {
+                changeOk(ee);
+                final Runnable setBackgoundEditText = new Runnable() {
+                    public void run() {
+                        cambiarNormal2(ee);
+                    }
+                };
+                TimerTask task = new TimerTask(){
+                    public void run() {
+                        MainActivity.this.runOnUiThread(setBackgoundEditText);
+                    }
+                };
+                timer = new Timer();
+                timer.schedule(task, 1000);
+            }
+        }
     }
 }
