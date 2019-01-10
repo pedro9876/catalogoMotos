@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="name">
+        <item>Wheel set</item>
+        <item>Spocket</item>
+        <item>Poolpegs</item>
+        <item>Bling KITS</item>
+        <item>Lever</item>
+        <item>Grant handle</item>
+        <item>Bar mounts</item>
+        <item>Disc guard</item>
+        <item>Cluts cover</item>
+    </string-array>
+
+    <integer-array name="images">
+        <item>@drawable/moto1</item>
+        <item>@drawable/moto2</item>
+        <item>@drawable/moto3</item>
+        <item>@drawable/moto4</item>
+        <item>@drawable/moto5</item>
+        <item>@drawable/moto6</item>
+        <item>@drawable/moto7</item>
+        <item>@drawable/moto8</item>
+        <item>@drawable/moto9</item>
+    </integer-array>
+</resources>

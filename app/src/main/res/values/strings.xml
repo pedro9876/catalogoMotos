@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Catalogo Motos</string>
+    <string name="title_activity_lvadapter">LVAdapter</string>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#d32f2f</color>
+    <color name="colorPrimaryDark">#b71c1c</color>
+    <color name="colorAccent">#D81B60</color>
+
+    //colors for the lexus catalog application (0.0)/)
+
+    <color name="white">#FFFFFF</color>
+    <color name="rectangle">#F7EDD4</color>
+    <color name="black">#212121</color>
+    <color name="yellow">#FFA000</color>
+    <color name="plateado">#4E4B4B</color>
+    <color name="griss">#9E9E9E</color>
+    <color name="naranja">#FF5722</color>
+    <color name="cafe">#795548</color>
+    <color name="azul">#1976D2</color>
+    <color name="transparence">#80000000</color>
+    <color name="verde_claro">#55a580</color>
+</resources>
+
