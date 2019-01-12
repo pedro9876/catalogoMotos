@@ -58,8 +58,9 @@ public class LVAdapter extends BaseAdapter {
 
         Moto moto = getItem(i);
 
-        viewHolder.name.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL|Gravity.CENTER_HORIZONTAL);
         viewHolder.name.setTextColor(Color.WHITE);
+        viewHolder.name.setGravity(Gravity.CENTER|Gravity.CENTER_HORIZONTAL|Gravity.CENTER_HORIZONTAL);
+
         viewHolder.name.setTextSize(TypedValue.COMPLEX_UNIT_SP,25);
         Typeface typeface = ResourcesCompat.getFont(context,R.font.nobellight);
         viewHolder.name.setTypeface(typeface);
@@ -68,6 +69,7 @@ public class LVAdapter extends BaseAdapter {
 
         return convertView;
     }
+
 
     private class ViewHolder {
         TextView name;
